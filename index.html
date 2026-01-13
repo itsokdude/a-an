@@ -6,15 +6,18 @@
     <title>English 5: A or AN?</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        body { font-family: 'Open Sans', sans-serif; }
+        body { font-family: 'Open Sans', sans-serif; background-color: #f8fafc; }
         h1, h2, h3, .fun-font { font-family: 'Fredoka', sans-serif; }
+        
         .card { transition: transform 0.2s; }
-        .card:hover { transform: translateY(-5px); }
+        .card:hover { transform: translateY(-4px); }
+        
         .hidden-content { display: none; }
-        /* Animation für Feedback */
+        
+        /* Animation für Fehler */
         @keyframes shake {
             0% { transform: translateX(0); }
             25% { transform: translateX(-5px); }
@@ -25,120 +28,139 @@
         .shake { animation: shake 0.4s ease-in-out; }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-800">
+<body class="text-slate-800">
 
-    <nav class="bg-indigo-600 text-white p-4 shadow-lg">
-        <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-bold"><i class="fas fa-graduation-cap mr-2"></i>English Class 5</h1>
-            <span class="text-sm bg-indigo-500 px-3 py-1 rounded-full">Unit: Articles</span>
+    <nav class="bg-indigo-600 text-white p-4 shadow-md sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center max-w-5xl">
+            <div class="flex items-center">
+                <i class="fas fa-graduation-cap text-xl mr-3"></i>
+                <h1 class="text-xl font-bold tracking-wide">English Class 5</h1>
+            </div>
+            <span class="text-xs bg-indigo-500 px-3 py-1 rounded-full font-semibold border border-indigo-400">
+                Unit: Articles
+            </span>
         </div>
     </nav>
 
     <div class="container mx-auto p-4 md:p-8 max-w-5xl">
         
-        <header class="text-center mb-10">
-            <h1 class="text-5xl font-bold text-indigo-700 mb-2">a <span class="text-slate-400 text-3xl">vs.</span> an</h1>
-            <p class="text-xl text-slate-600">The Sound Rule: Listen with your ears! 👂</p>
+        <header class="text-center mb-10 mt-2">
+            <h1 class="text-5xl md:text-6xl font-bold text-indigo-700 mb-2">a <span class="text-slate-400 text-4xl mx-2">vs.</span> an</h1>
+            <p class="text-lg text-slate-500 font-medium">The Sound Rule: Listen with your ears! 👂</p>
         </header>
 
-        <div class="grid md:grid-cols-2 gap-8 mb-12">
+        <div class="grid md:grid-cols-2 gap-6 md:gap-8 mb-12">
             
-            <div class="card bg-white p-6 rounded-2xl shadow-md border-l-8 border-green-500">
+            <div class="card bg-white p-6 rounded-2xl shadow-sm border-t-8 border-green-500">
                 <div class="flex items-center mb-4">
                     <div class="bg-green-100 p-3 rounded-full mr-4 text-green-600">
                         <i class="fas fa-volume-up text-2xl"></i>
                     </div>
-                    <h2 class="text-2xl font-bold">Vowel Sound</h2>
+                    <h2 class="text-2xl font-bold text-gray-800">Vowel Sound</h2>
                 </div>
-                <p class="text-lg mb-4">Starts with <b class="text-green-600">A, E, I, O, U</b></p>
-                <div class="bg-slate-50 p-4 rounded-xl text-xl font-bold text-center">
-                    <span class="text-green-600 block text-3xl mb-1">an</span>
-                    <ul class="text-left text-base text-slate-600 mt-2 space-y-1 ml-4 list-disc">
-                        <li>an <span class="text-black">a</span>pple 🍎</li>
-                        <li>an <span class="text-black">e</span>lephant 🐘</li>
-                        <li>an <span class="text-black">o</span>ld man 👴</li>
+                <p class="text-gray-600 mb-4 font-medium">Starts with <b class="text-green-600 bg-green-50 px-1 rounded">A, E, I, O, U</b></p>
+                <div class="bg-slate-50 p-5 rounded-xl text-center border border-slate-100">
+                    <span class="text-green-600 block text-4xl font-black mb-2 fun-font">an</span>
+                    <ul class="text-left text-slate-600 space-y-2 ml-6 list-disc font-medium">
+                        <li>an <span class="font-bold text-slate-800">a</span>pple 🍎</li>
+                        <li>an <span class="font-bold text-slate-800">e</span>lephant 🐘</li>
+                        <li>an <span class="font-bold text-slate-800">o</span>ld man 👴</li>
                     </ul>
                 </div>
             </div>
 
-            <div class="card bg-white p-6 rounded-2xl shadow-md border-l-8 border-orange-500 relative overflow-hidden">
-                <div class="absolute top-0 right-0 bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded-bl-lg">TRICKY!</div>
+            <div class="card bg-white p-6 rounded-2xl shadow-sm border-t-8 border-orange-500 relative overflow-hidden">
+                <div class="absolute top-4 right-4 bg-orange-100 text-orange-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Exception</div>
                 <div class="flex items-center mb-4">
                     <div class="bg-orange-100 p-3 rounded-full mr-4 text-orange-600">
                         <i class="fas fa-exclamation-triangle text-2xl"></i>
                     </div>
-                    <h2 class="text-2xl font-bold">The "U" Trap</h2>
+                    <h2 class="text-2xl font-bold text-gray-800">The "U" Trap</h2>
                 </div>
-                <p class="text-lg mb-4">Starts with "U" but sounds like <b class="text-orange-600">"YOU"</b> (J)</p>
-                <div class="bg-slate-50 p-4 rounded-xl text-xl font-bold text-center">
-                    <span class="text-orange-600 block text-3xl mb-1">a</span>
-                    <ul class="text-left text-base text-slate-600 mt-2 space-y-1 ml-4 list-disc">
-                        <li>a <span class="text-black">u</span>niversity 🏫</li>
-                        <li>a <span class="text-black">u</span>niform 🥋</li>
-                        <li>a <span class="text-black">u</span>nit 📏</li>
+                <p class="text-gray-600 mb-4 font-medium">Starts with "U" but sounds like <b class="text-orange-500 bg-orange-50 px-1 rounded">"YOU"</b> (J)</p>
+                <div class="bg-slate-50 p-5 rounded-xl text-center border border-slate-100">
+                    <span class="text-orange-500 block text-4xl font-black mb-2 fun-font">a</span>
+                    <ul class="text-left text-slate-600 space-y-2 ml-6 list-disc font-medium">
+                        <li>a <span class="font-bold text-slate-800">u</span>niversity 🏫</li>
+                        <li>a <span class="font-bold text-slate-800">u</span>niform 🥋</li>
+                        <li>a <span class="font-bold text-slate-800">u</span>nit 📏</li>
                     </ul>
                 </div>
             </div>
         </div>
 
-        <div class="bg-white rounded-3xl shadow-xl p-8 mb-12 text-center relative">
-            <h2 class="text-3xl font-bold mb-6 text-indigo-800">🚀 Speed Trainer</h2>
+        <div class="bg-white rounded-3xl shadow-lg p-6 md:p-10 mb-12 text-center border border-slate-100">
+            <h2 class="text-3xl font-bold mb-8 text-indigo-800 fun-font">
+                Practice Tool
+            </h2>
             
-            <div id="quiz-container">
-                <div class="text-sm text-slate-500 mb-2 uppercase tracking-wide">Next Word:</div>
-                <div id="word-display" class="text-5xl md:text-6xl font-bold mb-8 text-slate-800 min-h-[80px]">
+            <div id="quiz-container" class="max-w-2xl mx-auto">
+                <div class="text-xs text-slate-400 mb-2 uppercase tracking-widest font-bold">Current Word:</div>
+                
+                <div id="word-display" class="bg-slate-50 rounded-2xl py-8 mb-8 text-5xl md:text-6xl font-bold text-slate-800 min-h-[140px] flex items-center justify-center border-2 border-slate-100">
                     ...
                 </div>
 
-                <div class="flex justify-center gap-4 mb-6">
-                    <button onclick="checkAnswer('a')" class="bg-blue-500 hover:bg-blue-600 text-white text-2xl font-bold py-4 px-10 rounded-xl transition shadow-lg w-40">
+                <div class="flex justify-center gap-4 md:gap-8 mb-6">
+                    <button onclick="checkAnswer('a')" class="bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white text-3xl font-bold py-6 px-8 md:px-12 rounded-2xl transition-all shadow-md w-40 md:w-48">
                         a
                     </button>
-                    <button onclick="checkAnswer('an')" class="bg-green-500 hover:bg-green-600 text-white text-2xl font-bold py-4 px-10 rounded-xl transition shadow-lg w-40">
+                    <button onclick="checkAnswer('an')" class="bg-green-500 hover:bg-green-600 active:bg-green-700 text-white text-3xl font-bold py-6 px-8 md:px-12 rounded-2xl transition-all shadow-md w-40 md:w-48">
                         an
                     </button>
                 </div>
                 
-                <div id="feedback" class="h-8 text-xl font-bold"></div>
+                <div id="feedback" class="h-10 text-xl font-bold transition-all duration-300"></div>
+                
+                <button onclick="nextWord()" class="mt-6 text-slate-400 hover:text-indigo-500 text-sm font-semibold transition flex items-center justify-center mx-auto">
+                    <i class="fas fa-redo-alt mr-2"></i> Next Word
+                </button>
             </div>
-            
-            <button onclick="nextWord()" class="mt-4 text-indigo-500 hover:text-indigo-700 underline text-sm">Skip / New Word</button>
         </div>
 
-        <div class="border-t-2 border-slate-200 pt-8">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-xl font-bold text-slate-700">🧩 Differentiation Zone</h3>
-                <label class="flex items-center cursor-pointer">
-                    <span class="mr-3 text-sm font-medium text-slate-600">Pro Mode</span>
+        <div class="border-t-2 border-slate-200 pt-8 mt-12">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-bold text-slate-700">Differentiation Zone</h3>
+                
+                <label for="pro-mode-toggle" class="flex items-center cursor-pointer">
+                    <div class="mr-3 font-bold text-slate-500 text-sm">PRO MODE</div>
                     <div class="relative">
                         <input type="checkbox" id="pro-mode-toggle" class="sr-only" onchange="toggleProMode()">
-                        <div class="w-10 h-4 bg-gray-300 rounded-full shadow-inner"></div>
-                        <div class="dot absolute w-6 h-6 bg-white rounded-full shadow -left-1 -top-1 transition"></div>
+                        <div class="block bg-gray-300 w-14 h-8 rounded-full transition-colors duration-300 ease-in-out" id="toggle-bg"></div>
+                        <div class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform duration-300 ease-in-out"></div>
                     </div>
                 </label>
             </div>
 
-            <div id="normal-tips" class="bg-blue-50 p-4 rounded-lg text-blue-800">
-                <p><strong>Tip:</strong> If you are not sure, say the word out loud! Does it start like "Apple" (an) or "You" (a)?</p>
+            <div id="normal-tips" class="bg-blue-50 border border-blue-100 p-6 rounded-2xl text-blue-800 shadow-sm">
+                <p class="flex items-start">
+                    <i class="fas fa-info-circle mt-1 mr-3 text-xl"></i>
+                    <span><strong>Tip:</strong> Say the word <strong>out loud</strong>! Does it start like "Apple" (an) or like "You" (a)? Trust your ears!</span>
+                </p>
             </div>
 
-            <div id="pro-tips" class="hidden-content bg-purple-100 p-4 rounded-lg text-purple-900 border border-purple-200">
-                <h4 class="font-bold mb-2">🏆 Challenge for Experts: Adjectives!</h4>
-                <p class="mb-2">The adjective changes the rule! Look at the word <strong>directly</strong> after the article.</p>
-                <ul class="list-disc ml-5 space-y-1">
-                    <li>School -> <strong>a</strong> school</li>
-                    <li>Old school -> <strong>an</strong> <span class="underline">o</span>ld school</li>
-                    <li>Uncle -> <strong>an</strong> uncle</li>
-                    <li>Nice uncle -> <strong>a</strong> <span class="underline">n</span>ice uncle</li>
-                    <li><strong>Challenge:</strong> <em>___ ugly uniform?</em> (Answer: <strong>an</strong> ugly uniform)</li>
-                </ul>
+            <div id="pro-tips" class="hidden-content bg-purple-50 border border-purple-200 p-6 rounded-2xl text-purple-900 shadow-sm relative">
+                <div class="absolute -top-3 left-6 bg-purple-600 text-white text-xs font-bold px-2 py-1 rounded">EXPERT LEVEL</div>
+                <h4 class="font-bold text-lg mb-3 flex items-center">
+                    <i class="fas fa-star text-yellow-500 mr-2"></i> Challenge: Adjectives matter!
+                </h4>
+                <p class="mb-3 text-sm md:text-base">The rule applies to the word <strong>directly after</strong> the article.</p>
+                <div class="grid md:grid-cols-2 gap-4 text-sm">
+                    <ul class="list-disc ml-5 space-y-1">
+                        <li>School -> <strong>a</strong> school</li>
+                        <li>Old school -> <strong>an</strong> <span class="underline decoration-purple-500 decoration-2">o</span>ld school</li>
+                    </ul>
+                    <ul class="list-disc ml-5 space-y-1">
+                        <li>Uncle -> <strong>an</strong> uncle</li>
+                        <li>Nice uncle -> <strong>a</strong> <span class="underline decoration-purple-500 decoration-2">n</span>ice uncle</li>
+                    </ul>
+                </div>
             </div>
         </div>
 
     </div>
 
     <script>
-        // Word Database
         const words = [
             { word: "apple", type: "an", icon: "🍎" },
             { word: "elephant", type: "an", icon: "🐘" },
@@ -151,36 +173,46 @@
             { word: "uniform", type: "a", icon: "🥋" },
             { word: "insect", type: "an", icon: "🐞" },
             { word: "user", type: "a", icon: "💻" },
-            { word: "uncle", type: "an", icon: "👨" }
+            { word: "uncle", type: "an", icon: "👨" },
+            { word: "ice cream", type: "an", icon: "🍦" },
+            { word: "unicorn", type: "a", icon: "🦄" }
         ];
 
         let currentWord = {};
+        let isLocked = false; // Prevents double clicking
 
         function nextWord() {
-            // Pick random word
             const randomIndex = Math.floor(Math.random() * words.length);
             currentWord = words[randomIndex];
             
-            // Update UI
             const display = document.getElementById('word-display');
-            display.innerHTML = `${currentWord.word} <span class="text-3xl align-top">${currentWord.icon}</span>`;
+            display.innerHTML = `${currentWord.word} <span class="text-4xl md:text-5xl ml-2 align-middle">${currentWord.icon}</span>`;
+            display.classList.remove('bg-green-50', 'bg-red-50', 'shake');
+            display.classList.add('bg-slate-50');
             
-            // Clear feedback
             const feedback = document.getElementById('feedback');
             feedback.innerHTML = "";
-            feedback.className = "h-8 text-xl font-bold";
+            
+            isLocked = false;
         }
 
         function checkAnswer(answer) {
+            if (isLocked) return;
+
             const feedback = document.getElementById('feedback');
+            const display = document.getElementById('word-display');
             
             if (answer === currentWord.type) {
-                feedback.innerHTML = "<span class='text-green-600'><i class='fas fa-check'></i> Correct!</span>";
-                // Auto load next word after short delay
-                setTimeout(nextWord, 1000);
+                // Correct
+                feedback.innerHTML = "<span class='text-green-600 bg-green-100 px-4 py-1 rounded-full shadow-sm'><i class='fas fa-check-circle'></i> Correct!</span>";
+                display.classList.remove('bg-slate-50');
+                display.classList.add('bg-green-50');
+                
+                isLocked = true;
+                setTimeout(nextWord, 1500); // Wait 1.5s then next word
             } else {
-                feedback.innerHTML = "<span class='text-red-500'><i class='fas fa-times'></i> Try again! Listen carefully.</span>";
-                const display = document.getElementById('word-display');
+                // Incorrect
+                feedback.innerHTML = "<span class='text-red-500 bg-red-100 px-4 py-1 rounded-full shadow-sm'><i class='fas fa-times-circle'></i> Try again!</span>";
                 display.classList.add('shake');
                 setTimeout(() => display.classList.remove('shake'), 500);
             }
@@ -190,19 +222,21 @@
             const checkbox = document.getElementById('pro-mode-toggle');
             const normal = document.getElementById('normal-tips');
             const pro = document.getElementById('pro-tips');
+            const dot = document.querySelector('.dot');
+            const bg = document.getElementById('toggle-bg');
             
             if(checkbox.checked) {
                 normal.style.display = 'none';
                 pro.style.display = 'block';
-                // Toggle Dot animation via CSS class manipulation would be cleaner, 
-                // but direct style is fine for this simple snippet
-                document.querySelector('.dot').style.transform = 'translateX(100%)';
-                document.querySelector('.dot').style.backgroundColor = '#6b46c1'; // Purple
+                dot.style.transform = 'translateX(100%)';
+                bg.classList.remove('bg-gray-300');
+                bg.classList.add('bg-purple-500');
             } else {
                 normal.style.display = 'block';
                 pro.style.display = 'none';
-                document.querySelector('.dot').style.transform = 'translateX(0)';
-                document.querySelector('.dot').style.backgroundColor = 'white';
+                dot.style.transform = 'translateX(0)';
+                bg.classList.add('bg-gray-300');
+                bg.classList.remove('bg-purple-500');
             }
         }
 
