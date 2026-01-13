@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Sound Rule: A vs An</title>
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel für JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fonts -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;700&display=swap');
+        
+        body { font-family: 'Nunito', sans-serif; background-color: #f0fdf4; }
+        .font-heading { font-family: 'Fredoka', sans-serif; }
+        
+        .animate-pop { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .animate-slide-up { animation: slideUp 0.5s ease-out forwards; }
+        .animate-shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
+
+        @keyframes popIn {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+
+        .pattern-dots {
+            background-image: radial-gradient(#bae6fd 2px, transparent 2px);
+            background-size: 20px 20px;
+        }
+
+        /* Game Box Styles */
+        .box-container {
+            transition: all 0.3s ease;
+        }
+        .box-lid {
+            transition: transform 0.3s ease;
+            transform-origin: top;
+        }
+        .box-container:hover .box-lid {
+            transform: rotateX(20deg) translateY(-5px);
+        }
+        
+        /* Scrollbar hiding for word lists */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // --- ICONS ---
+        const Ear = ({ size = 64, className }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <path d="M6 8.5a6.5 6.5 0 1 1 13 0c0 6-6 6-6 10a3.5 3.5 0 1 1-7 0"/>
+                <path d="M15 8.5a2.5 2.5 0 0 0-5 0v1a2 2 0 1 0 4 0v-1a.5.5 0 0 1 1 0v1a.5.5 0 1 1-1 0"/>
+            </svg>
+        );
+
+        const Eye = ({ size = 64, className }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                <circle cx="12" cy="12" r="3"/>
+            </svg>
+        );
+
+        const ArrowRight = ({ size = 24 }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        );
+
+        const ArrowLeft = ({ size = 24 }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+        );
+        
+        const Volume2 = ({ size = 32 }) => (
+             <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+        );
+
+        // --- ASSETS & DATA ---
+        
+        // Game Words Data
+        const gameWords = [
+            { id: 1, word: "Apple", article: "an", type: "standard", hint: "Starts with A sound" },
+            { id: 2, word: "Banana", article: "a", type: "standard", hint: "Starts with B sound" },
+            { id: 3, word: "Umbrella", article: "an", type: "tricky", hint: "Sound: 'Uh' (Vowel)" },
+            { id: 4, word: "Uniform", article: "a", type: "tricky", hint: "Sound: 'You' (Consonant)" },
+            { id: 5, word: "Elephant", article: "an", type: "standard", hint: "Starts with E sound" },
+            { id: 6, word: "Window", article: "a", type: "standard", hint: "Starts with W sound" },
+            { id: 7, word: "Uncle", article: "an", type: "tricky", hint: "Sound: 'Uh' (Vowel)" },
+            { id: 8, word: "University", article: "a", type: "tricky", hint: "Sound: 'You' (Consonant)" },
+            { id: 9, word: "Orange", article: "an", type: "standard", hint: "Starts with O sound" },
+            { id: 10, word: "Teacher", article: "a", type: "standard", hint: "Starts with T sound" },
+            { id: 11, word: "Unit", article: "a", type: "tricky", hint: "Sound: 'You' (Consonant)" },
+            { id: 12, word: "Ice Cream", article: "an", type: "standard", hint: "Starts with I sound" }
+        ];
+
+        // --- COMPONENTS ---
+
+        // 1. INTRO SLIDE
+        const SlideIntro = () => (
+            <div className="flex flex-col items-center justify-center h-full text-center p-8">
+                <div className="bg-white rounded-3xl p-12 shadow-xl border-b-8 border-blue-500 max-w-4xl w-full animate-pop">
+                    <h1 className="text-6xl font-heading font-bold text-blue-600 mb-6 tracking-wide">The Sound Detectives 🕵️‍♀️</h1>
+                    <p className="text-2xl text-gray-600 mb-8 font-heading">Rule #1: Don't trust your eyes.</p>
+                    
+                    <div className="flex justify-center items-center gap-12 mt-8">
+                        <div className="flex flex-col items-center opacity-30 scale-90">
+                            <Eye size={100} className="text-gray-400 mb-2" />
+                            <span className="text-3xl font-bold text-gray-400 line-through decoration-4 decoration-red-500">EYES</span>
+                        </div>
+                        <div className="text-5xl font-bold text-gray-300">VS</div>
+                        <div className="flex flex-col items-center transform scale-110">
+                            <div className="bg-yellow-100 p-6 rounded-full border-4 border-yellow-400 animate-bounce">
+                                <Ear size={100} className="text-yellow-600" />
+                            </div>
+                            <span className="text-4xl font-bold text-yellow-600 mt-4">EARS</span>
+                        </div>
+                    </div>
+                    <div className="mt-12 text-xl bg-blue-50 inline-block px-6 py-3 rounded-full text-blue-800 font-bold border border-blue-200">
+                        We decide with the sound! 🎧
+                    </div>
+                </div>
+            </div>
+        );
+
+        // 2. THE STANDARD RULE
+        const SlideRule = () => (
+            <div className="flex flex-col items-center justify-start pt-10 h-full p-4">
+                <h2 className="text-5xl font-heading font-bold text-slate-700 mb-8 bg-white px-8 py-2 rounded-2xl shadow-sm border-2 border-slate-200">The Standard Rule</h2>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-5xl">
+                    
+                    {/* Vowel Box */}
+                    <div className="bg-white rounded-3xl p-8 border-l-8 border-green-500 shadow-lg flex flex-col items-center animate-slide-up" style={{animationDelay: '0.1s'}}>
+                        <h3 className="text-3xl font-bold text-green-600 mb-4">Vowel Sounds</h3>
+                        <div className="flex gap-2 text-4xl font-bold text-slate-600 mb-6 bg-green-50 px-4 py-2 rounded-xl">
+                            <span>A</span><span>E</span><span>I</span><span>O</span><span>U</span>
+                        </div>
+                        <div className="text-6xl font-bold text-green-500 bg-green-100 w-32 h-32 rounded-full flex items-center justify-center border-4 border-green-200 mb-4">an</div>
+                        <div className="w-full text-left space-y-2 text-xl text-slate-600">
+                            <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-green-500"></div> an apple</div>
+                            <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-green-500"></div> an elephant</div>
+                            <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-green-500"></div> an orange</div>
+                        </div>
+                    </div>
+
+                    {/* Consonant Box */}
+                    <div className="bg-white rounded-3xl p-8 border-l-8 border-blue-500 shadow-lg flex flex-col items-center animate-slide-up" style={{animationDelay: '0.3s'}}>
+                        <h3 className="text-3xl font-bold text-blue-600 mb-4">Consonant Sounds</h3>
+                        <div className="flex gap-2 text-2xl font-bold text-slate-400 mb-6 bg-blue-50 px-4 py-3.5 rounded-xl">
+                            <span>B, C, D, F, G...</span>
+                        </div>
+                        <div className="text-6xl font-bold text-blue-500 bg-blue-100 w-32 h-32 rounded-full flex items-center justify-center border-4 border-blue-200 mb-4">a</div>
+                        <div className="w-full text-left space-y-2 text-xl text-slate-600">
+                            <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-blue-500"></div> a banana</div>
+                            <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-blue-500"></div> a dog</div>
+                            <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-blue-500"></div> a teacher</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="mt-8 flex items-center gap-4 bg-yellow-100 p-4 rounded-xl border-2 border-yellow-300 animate-pop delay-500">
+                    <Ear className="text-yellow-600" />
+                    <p className="text-xl font-bold text-yellow-800">It helps us speak faster! "An-apple" flows better.</p>
+                </div>
+            </div>
+        );
+
+        // 3. THE TRICKY U
+        const SlideTrickyU = () => (
+            <div className="flex flex-col items-center justify-center h-full p-4">
+                 <div className="absolute top-4 right-4 bg-red-100 text-red-600 px-4 py-2 rounded-full font-bold animate-pulse border-2 border-red-200">⚠️ TRAP ALERT</div>
+                 
+                 <h2 className="text-5xl font-heading font-bold text-purple-700 mb-2">The Tricky "U"</h2>
+                 <p className="text-xl text-purple-900 mb-8 font-medium">Listen carefully! Same letter, different sound.</p>
+
+                 <div className="flex flex-col md:flex-row gap-8 w-full max-w-5xl justify-center items-stretch">
+                    
+                    {/* Umbrella Side */}
+                    <div className="flex-1 bg-white rounded-3xl p-6 shadow-lg border-b-8 border-purple-400 flex flex-col items-center relative overflow-hidden group hover:scale-105 transition-transform">
+                        <div className="absolute top-0 left-0 w-full h-2 bg-purple-400"></div>
+                        <div className="text-8xl mb-4 transform group-hover:rotate-12 transition-transform">☔️</div>
+                        <h3 className="text-4xl font-bold text-slate-700 mb-2">Umbrella</h3>
+                        <div className="bg-slate-100 px-4 py-2 rounded-lg text-slate-500 font-mono text-lg mb-6">/ʌmˈbrelə/</div>
+                        
+                        <div className="flex items-center gap-3 w-full bg-purple-50 p-4 rounded-xl">
+                            <Volume2 className="text-purple-600 flex-shrink-0" />
+                            <div className="text-left">
+                                <p className="text-sm text-purple-800 uppercase font-bold">Sound:</p>
+                                <p className="text-xl font-bold text-purple-600">"Uh" (Vowel)</p>
+                            </div>
+                        </div>
+                        <div className="mt-auto pt-6">
+                            <span className="text-5xl font-bold text-green-500">an</span>
+                            <span className="text-2xl text-slate-600 ml-2 font-bold">umbrella</span>
+                        </div>
+                    </div>
+
+                    {/* VS Badge */}
+                    <div className="flex items-center justify-center">
+                        <div className="bg-slate-800 text-white font-bold rounded-full w-16 h-16 flex items-center justify-center text-2xl border-4 border-slate-200 z-10">VS</div>
+                    </div>
+
+                    {/* Uniform Side */}
+                    <div className="flex-1 bg-white rounded-3xl p-6 shadow-lg border-b-8 border-pink-400 flex flex-col items-center relative overflow-hidden group hover:scale-105 transition-transform">
+                        <div className="absolute top-0 left-0 w-full h-2 bg-pink-400"></div>
+                        <div className="text-8xl mb-4 transform group-hover:-rotate-12 transition-transform">🦄</div>
+                        <h3 className="text-4xl font-bold text-slate-700 mb-2">Unicorn</h3>
+                        <div className="bg-slate-100 px-4 py-2 rounded-lg text-slate-500 font-mono text-lg mb-6">/ˈjuːnɪkɔːn/</div>
+                        
+                        <div className="flex items-center gap-3 w-full bg-pink-50 p-4 rounded-xl">
+                            <Volume2 className="text-pink-600 flex-shrink-0" />
+                            <div className="text-left">
+                                <p className="text-sm text-pink-800 uppercase font-bold">Sound:</p>
+                                <p className="text-xl font-bold text-pink-600">"You" (Like a J!)</p>
+                            </div>
+                        </div>
+                        <div className="mt-auto pt-6">
+                            <span className="text-5xl font-bold text-blue-500">a</span>
+                            <span className="text-2xl text-slate-600 ml-2 font-bold">unicorn</span>
+                        </div>
+                    </div>
+                 </div>
+
+                 <div className="mt-8 bg-white/60 p-4 rounded-xl border border-white text-slate-600 text-center max-w-2xl">
+                    <p className="font-bold">The Rule:</p>
+                    <p>If "U" sounds like "You" (German J), we treat it as a Consonant <span className="font-bold text-blue-500">→ a</span>.</p>
+                 </div>
+            </div>
+        );
+
+        // 4. THE GAME (INTERACTIVE SORTING)
+        const SlideGame = () => {
+            const [currentWordIdx, setCurrentWordIdx] = useState(0);
+            const [gameState, setGameState] = useState('intro'); // intro, playing, finished
+            const GAME_DURATION = 7; // Updated to 7 seconds
+            const [timeLeft, setTimeLeft] = useState(GAME_DURATION);
+            const [boxState, setBoxState] = useState(null); // 'correct-a', 'correct-an', 'wrong'
+            
+            // New State: Collected Words
+            const [collectedWords, setCollectedWords] = useState({ a: [], an: [] });
+
+            // Timer Logic
+            useEffect(() => {
+                let timer;
+                if (gameState === 'playing' && timeLeft > 0 && !boxState) {
+                    timer = setTimeout(() => setTimeLeft(prev => prev - 1), 1000);
+                } else if (timeLeft === 0 && !boxState) {
+                    // Time up! Auto-reveal
+                    handleAnswer(null, true);
+                }
+                return () => clearTimeout(timer);
+            }, [timeLeft, gameState, boxState]);
+
+            const currentWord = gameWords[currentWordIdx];
+
+            const startGame = () => {
+                setGameState('playing');
+                setTimeLeft(GAME_DURATION);
+                setCurrentWordIdx(0);
+                setBoxState(null);
+                setCollectedWords({ a: [], an: [] });
+            };
+
+            const handleAnswer = (selectedArticle, timeOut = false) => {
+                const correct = currentWord.article;
+                
+                if (timeOut) {
+                    setBoxState(`reveal-${correct}`); // Show correct answer
+                } else {
+                    if (selectedArticle === correct) {
+                        setBoxState(`correct-${correct}`);
+                    } else {
+                        setBoxState('wrong');
+                        // Small delay then show correct
+                        setTimeout(() => setBoxState(`reveal-${correct}`), 800);
+                        // Return early so we don't add the word yet
+                        return; 
+                    }
+                }
+
+                // Add word to collection immediately when correct box is identified
+                setCollectedWords(prev => ({
+                    ...prev,
+                    [correct]: [...prev[correct], currentWord.word]
+                }));
+
+                // Proceed to next word after delay
+                setTimeout(() => {
+                    if (currentWordIdx < gameWords.length - 1) {
+                        setCurrentWordIdx(prev => prev + 1);
+                        setTimeLeft(GAME_DURATION);
+                        setBoxState(null);
+                    } else {
+                        setGameState('finished');
+                    }
+                }, 2000);
+            };
+
+            // Render Intro
+            if (gameState === 'intro') {
+                return (
+                    <div className="flex flex-col items-center justify-center h-full">
+                        <div className="bg-white p-10 rounded-3xl shadow-xl text-center max-w-lg border-b-8 border-orange-400">
+                            <h2 className="text-5xl font-heading font-bold text-orange-500 mb-6">Game Time!</h2>
+                            <p className="text-xl text-gray-600 mb-4">
+                                Listen to the word. 
+                            </p>
+                            <p className="text-lg text-gray-500 mb-8 italic">
+                                You have <b>{GAME_DURATION} seconds</b> to decide: A or AN?
+                            </p>
+                            <button onClick={startGame} className="bg-orange-500 hover:bg-orange-600 text-white font-bold text-2xl py-4 px-12 rounded-full transform transition hover:scale-105 shadow-lg border-b-4 border-orange-700">
+                                Start Game ▶
+                            </button>
+                        </div>
+                    </div>
+                );
+            }
+
+            // Render Finished (NO SCORE, Just Collection)
+            if (gameState === 'finished') {
+                return (
+                    <div className="flex flex-col items-center justify-center h-full w-full p-4">
+                        <div className="bg-white p-8 rounded-3xl shadow-xl text-center animate-pop border-b-8 border-yellow-400 w-full max-w-5xl h-full flex flex-col">
+                            <h2 className="text-4xl font-heading font-bold text-slate-800 mb-6">All Words Sorted! 📦</h2>
+                            
+                            <div className="grid grid-cols-2 gap-8 flex-1 overflow-hidden">
+                                {/* Final A Collection */}
+                                <div className="bg-blue-100 rounded-2xl border-4 border-blue-400 p-4 flex flex-col">
+                                    <h3 className="text-3xl font-bold text-blue-600 mb-4 border-b-2 border-blue-300 pb-2">Words with 'A'</h3>
+                                    <div className="flex-1 overflow-y-auto space-y-2 pr-2">
+                                        {collectedWords.a.map((word, i) => (
+                                            <div key={i} className="bg-white p-3 rounded-xl shadow-sm font-bold text-blue-800 text-xl border border-blue-200">
+                                                {word}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Final AN Collection */}
+                                <div className="bg-orange-100 rounded-2xl border-4 border-orange-400 p-4 flex flex-col">
+                                    <h3 className="text-3xl font-bold text-orange-600 mb-4 border-b-2 border-orange-300 pb-2">Words with 'AN'</h3>
+                                    <div className="flex-1 overflow-y-auto space-y-2 pr-2">
+                                        {collectedWords.an.map((word, i) => (
+                                            <div key={i} className="bg-white p-3 rounded-xl shadow-sm font-bold text-orange-800 text-xl border border-orange-200">
+                                                {word}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="mt-6">
+                                <button onClick={startGame} className="bg-slate-700 hover:bg-slate-800 text-white font-bold text-xl py-3 px-8 rounded-xl shadow-md">
+                                    Restart ↺
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            // Game UI
+            const isRevealing = boxState && boxState.startsWith('reveal');
+            const isCorrectA = boxState === 'correct-a' || boxState === 'reveal-a';
+            const isCorrectAn = boxState === 'correct-an' || boxState === 'reveal-an';
+
+            return (
+                <div className="flex flex-col h-full w-full max-w-5xl mx-auto p-4 relative">
+                    {/* Header */}
+                    <div className="flex justify-between items-center mb-8 bg-white/50 p-4 rounded-2xl backdrop-blur-sm">
+                        <div className="font-bold text-slate-600 text-xl">Word {currentWordIdx + 1}/{gameWords.length}</div>
+                        <div className="font-bold text-slate-500 text-sm italic">Teacher reads the word...</div>
+                    </div>
+
+                    {/* Timer Bar */}
+                    <div className="w-full h-6 bg-gray-200 rounded-full mb-10 overflow-hidden border-2 border-white shadow-inner">
+                        <div 
+                            className={`h-full transition-all duration-1000 ease-linear ${timeLeft <= 3 ? 'bg-red-500' : 'bg-green-500'}`} 
+                            style={{ width: `${(timeLeft / GAME_DURATION) * 100}%` }}
+                        ></div>
+                    </div>
+
+                    {/* The Word Card (Floating) */}
+                    <div className="flex-grow flex justify-center items-center relative z-20">
+                         <div 
+                            className={`bg-white border-4 border-slate-700 p-8 rounded-3xl shadow-2xl transform transition-all duration-700 absolute
+                                ${isCorrectA ? 'translate-y-[200px] -translate-x-[200px] scale-25 opacity-0 rotate-[-15deg]' : ''}
+                                ${isCorrectAn ? 'translate-y-[200px] translate-x-[200px] scale-25 opacity-0 rotate-[15deg]' : ''}
+                                ${!boxState ? 'scale-100 animate-pop' : ''}
+                            `}
+                        >
+                            <h2 className="text-6xl font-heading font-bold text-slate-800">{currentWord.word}</h2>
+                            {/* Show Hint if Revealing */}
+                            {isRevealing && (
+                                <div className="mt-2 text-center text-red-500 font-bold bg-red-50 px-2 rounded animate-pulse">
+                                    {currentWord.hint}
+                                </div>
+                            )}
+                         </div>
+                    </div>
+
+                    {/* The Boxes (Buttons) */}
+                    <div className="grid grid-cols-2 gap-12 mt-auto h-72">
+                        
+                        {/* Box A */}
+                        <div 
+                            onClick={() => !boxState && handleAnswer('a')}
+                            className={`
+                                relative cursor-pointer group box-container
+                                flex flex-col items-center justify-end
+                                ${boxState && !isCorrectA ? 'opacity-50 grayscale' : ''}
+                            `}
+                        >
+                            {/* Box Lid/Opening */}
+                            <div className={`w-48 h-12 bg-blue-600 rounded-t-lg z-10 box-lid mb-[-5px] shadow-lg border-2 border-blue-700 flex items-center justify-center
+                                ${isCorrectA ? 'bg-green-500 border-green-600 -translate-y-8 rotate-[-10deg]' : ''}
+                            `}>
+                                <span className="font-bold text-white text-xl tracking-widest">OPEN</span>
+                            </div>
+                            
+                            {/* Box Body */}
+                            <div className={`
+                                w-full h-56 bg-blue-500 rounded-b-2xl border-4 border-blue-700 shadow-[0_10px_0_rgba(29,78,216,0.3)]
+                                flex flex-col items-center justify-start pt-4 relative overflow-hidden transition-colors duration-300
+                                ${isCorrectA ? 'bg-green-500 border-green-600 shadow-[0_10px_0_rgba(21,128,61,0.3)]' : 'hover:bg-blue-400'}
+                                ${boxState === 'wrong' && currentWord.article === 'an' ? 'animate-shake bg-red-500 border-red-700' : ''}
+                            `}>
+                                {!isCorrectA && <div className="text-8xl font-bold text-white/20 font-heading absolute top-2">A</div>}
+                                
+                                {/* Collected Words Display Inside Box */}
+                                <div className="w-full px-4 space-y-1 overflow-y-auto scrollbar-hide max-h-full z-10 flex flex-col items-center">
+                                    {collectedWords.a.map((w, i) => (
+                                        <div key={i} className="bg-white/90 text-blue-900 text-sm font-bold px-3 py-1 rounded-full shadow-sm animate-pop">
+                                            {w}
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {isCorrectA && <div className="absolute inset-0 flex items-center justify-center bg-white/20 text-4xl pointer-events-none z-20">✅</div>}
+                            </div>
+                        </div>
+
+                        {/* Box AN */}
+                        <div 
+                            onClick={() => !boxState && handleAnswer('an')}
+                            className={`
+                                relative cursor-pointer group box-container
+                                flex flex-col items-center justify-end
+                                ${boxState && !isCorrectAn ? 'opacity-50 grayscale' : ''}
+                            `}
+                        >
+                            {/* Box Lid/Opening */}
+                            <div className={`w-48 h-12 bg-orange-500 rounded-t-lg z-10 box-lid mb-[-5px] shadow-lg border-2 border-orange-700 flex items-center justify-center
+                                ${isCorrectAn ? 'bg-green-500 border-green-600 -translate-y-8 rotate-[10deg]' : ''}
+                            `}>
+                                <span className="font-bold text-white text-xl tracking-widest">OPEN</span>
+                            </div>
+
+                            {/* Box Body */}
+                            <div className={`
+                                w-full h-56 bg-orange-500 rounded-b-2xl border-4 border-orange-700 shadow-[0_10px_0_rgba(194,65,12,0.3)]
+                                flex flex-col items-center justify-start pt-4 relative overflow-hidden transition-colors duration-300
+                                ${isCorrectAn ? 'bg-green-500 border-green-600 shadow-[0_10px_0_rgba(21,128,61,0.3)]' : 'hover:bg-orange-400'}
+                                ${boxState === 'wrong' && currentWord.article === 'a' ? 'animate-shake bg-red-500 border-red-700' : ''}
+                            `}>
+                                {!isCorrectAn && <div className="text-8xl font-bold text-white/20 font-heading absolute top-2">AN</div>}
+                                
+                                {/* Collected Words Display Inside Box */}
+                                <div className="w-full px-4 space-y-1 overflow-y-auto scrollbar-hide max-h-full z-10 flex flex-col items-center">
+                                    {collectedWords.an.map((w, i) => (
+                                        <div key={i} className="bg-white/90 text-orange-900 text-sm font-bold px-3 py-1 rounded-full shadow-sm animate-pop">
+                                            {w}
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {isCorrectAn && <div className="absolute inset-0 flex items-center justify-center bg-white/20 text-4xl pointer-events-none z-20">✅</div>}
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            );
+        };
+
+
+        // --- MAIN APP ---
+        const App = () => {
+            const [currentSlide, setCurrentSlide] = useState(0);
+            const totalSlides = 4;
+
+            const nextSlide = () => setCurrentSlide(prev => Math.min(prev + 1, totalSlides - 1));
+            const prevSlide = () => setCurrentSlide(prev => Math.max(prev - 1, 0));
+
+            return (
+                <div className="flex flex-col h-screen overflow-hidden pattern-dots bg-[#f0f9ff]">
+                    {/* Header Nav */}
+                    <div className="h-16 bg-white border-b-4 border-slate-200 flex items-center justify-between px-6 shadow-sm z-50">
+                        <div className="flex items-center gap-2 text-slate-700 font-heading font-bold text-xl">
+                            <div className="bg-yellow-400 p-1.5 rounded-lg border-2 border-yellow-600 text-yellow-900">
+                                <Ear size={20} />
+                            </div>
+                            The Sound Rule
+                        </div>
+                        
+                        <div className="flex gap-4 items-center">
+                            <span className="text-slate-400 font-bold hidden sm:block">Slide {currentSlide + 1} of {totalSlides}</span>
+                            <div className="flex gap-2">
+                                <button 
+                                    onClick={prevSlide} 
+                                    disabled={currentSlide === 0}
+                                    className="p-2 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                                >
+                                    <ArrowLeft />
+                                </button>
+                                <button 
+                                    onClick={nextSlide} 
+                                    disabled={currentSlide === totalSlides - 1}
+                                    className="p-2 rounded-xl bg-blue-500 text-white hover:bg-blue-600 disabled:opacity-30 disabled:cursor-not-allowed shadow-[0_4px_0_rgb(29,78,216)] active:translate-y-1 active:shadow-none transition-all"
+                                >
+                                    <ArrowRight />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Slide Content */}
+                    <div className="flex-grow relative overflow-hidden">
+                        {currentSlide === 0 && <SlideIntro />}
+                        {currentSlide === 1 && <SlideRule />}
+                        {currentSlide === 2 && <SlideTrickyU />}
+                        {currentSlide === 3 && <SlideGame />}
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
